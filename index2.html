@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<style>
+  select { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<h1 id="greeting">test</h1>
+
+<form action="/change-lang" id="form" method="post">
+<select name="lang" id="select">
+<option value="en">English</option>
+<option value="arm">Armenian</option>
+</select>
+</form>
+
+<div>
+<a href="login" id="login"></a>
+<br>
+<a href="logout" id="logout"></a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+async function load(){
+  try {
+    const response = await axios.get("/get-lang");
+    
+    const {greeting, login, logout} = response.data;
+    document.getElementById("greeting").innerText = greeting;
+    document.getElementById("login").innerText = login;
+    document.getElementById("logout").innerText = logout;
+    
+    // Update the select element to match the current language
+    const currentLang = response.data.lang || 
+                       (greeting === "Welcome" ? "en" : "arm");
+    document.getElementById("select").value = currentLang;
+    
+    console.log("Loaded language data:", response.data);
+  } catch (error) {
+    console.error("Error loading language data:", error);
+  }
+}
+
+document.getElementById("select").addEventListener("change", () => {
+  console.log("Language changed to:", document.getElementById("select").value);
+  document.getElementById("form").submit();
+});
+
+window.onload = function(){
+  load();
+}
+</script>
+</body>
+</html>
